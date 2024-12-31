@@ -43,6 +43,12 @@ def send_message(driver, message):
     elem.send_keys(Keys.RETURN)
 
 
+def is_reply(message):
+    if "You" in message and "BeebsGPT" in message:
+        return True
+    return False
+
+
 def main():
     message_set = set()
     driver = open_whatsapp()
@@ -51,10 +57,11 @@ def main():
     while True:
         try:
             message = get_recent_message(driver)
+
             # Avoid replying to your own messages
-            if f"{name}:" in message:
+            if not is_reply(message) and f"{name}:" in message:
                 continue
-            if f"@{name.lower()}" in message.lower():
+            if f"@{name.lower()}" in message.lower() or is_reply(message):
                 if message not in message_set:
                     message_set.add(message)
                     response = get_response(message)
